@@ -6,7 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var userRouter = require('./routes/user')
 // Test routes
 var testAPIRouter = require("./routes/testAPI");
 
@@ -22,11 +22,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// React Build Folder
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+app.get('/api/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
+app.use('/api/users', usersRouter);
+app.use('/api/user', userRouter);
 
 // Test routes
-app.use("/testAPI", testAPIRouter);
+app.use("/api/testAPI", testAPIRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
