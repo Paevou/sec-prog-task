@@ -1,5 +1,18 @@
 #!/usr/bin/env node
 
+
+const https = require('https')
+
+const fs = require('fs');
+// HTTPS creadentials (self-signed)
+// Certificate created with openssl x509 protocol
+// Key with 'openssl genrsa'
+// https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+}
+
 /**
  * Module dependencies.
  */
@@ -16,11 +29,11 @@ var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTPs server.
  */
 
-var server = http.createServer(app);
-
+var server = https.createServer(options, app);
+console.log("HTTPS server running at https://localhost:9000/");
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -78,7 +91,7 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener for HTTPS server "listening" event.
  */
 
 function onListening() {
@@ -88,3 +101,4 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+

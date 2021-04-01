@@ -12,6 +12,19 @@ var testAPIRouter = require("./routes/testAPI");
 
 var app = express();
 
+/**
+ * Redirect http traffic to https
+ */
+app.enable('trust proxy');
+app.use((req, res, next) => {
+  if(req.secure) {
+    next();
+  } else {
+    res.writeHead(301, {"Location": "https://" + req.headers['host'] + ":" + port + req.url});
+    res.end();
+  }
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
