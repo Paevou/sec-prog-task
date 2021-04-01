@@ -21,13 +21,11 @@ const app = express()
 app.enable('trust proxy');
 app.use((req, res, next) => {
   if(req.secure) {
-    console.log("HTTPS")
     next();
   } else {
-    console.log("HTTPS")
     res.redirect('https://' + req.headers.host + req.url);
   }
-})
+});
 
 // Server only accepts https connections making communication enncypted and safe
 // In a real life server the certificate would be distributed from a trusted third-party and not a self signed one
@@ -39,14 +37,14 @@ app.get('/', function (req, res ) {
 });
 
 const hostname = '127.0.0.1';
-const port = 443;
+const port = 8080; // HTTPS port is 443
 server.listen(port, function(req, res) {
   console.log(`Server running at https://${hostname}:${port}/`);
-})
+});
 
 // Redirect all http requests to https
 // We don't want to allow http traffic at all as it is not secure
-// and enables man-in-the-middle attacks and packet sniffing.
+// and enables man-in-the-middle attacks and packet sniffing/tampering.
 http.createServer( options, (req, res) => {
   res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
   res.end();
