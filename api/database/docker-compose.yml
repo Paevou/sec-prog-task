@@ -1,0 +1,14 @@
+version: "3"
+services:
+    psql:
+        image: postgres:latest
+        restart: always
+        container_name: user-database
+        ports:
+            - "5432:5432"
+        environment:
+          POSTGRES_USER: ${PSQL_USER}
+          POSTGRES_PASSWORD: ${PSQL_PASS}
+          TZ: "Europe/Helsinki"
+        volumes:
+            - ./postgres-data:/var/lib/postgresql/data

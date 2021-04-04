@@ -10,6 +10,8 @@ var userRouter = require('./routes/user')
 // Test routes
 var testAPIRouter = require("./routes/testAPI");
 
+var userDB = require("./database/userDB");
+
 var app = express();
 
 /**
