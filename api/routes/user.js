@@ -5,9 +5,10 @@ var passwordHash  = require('password-hash');
 
 /* POST new user listing. */
 router.post('/', function(req, res, next) {
-  let body = req.body['user'];
+  let body = req.body;
   const hash_salt = passwordHash.generate('testPassword');
   body['pw_hash_salt'] = hash_salt;
+  console.log(body)
   userBD.addUser(body)
     .then(result => {
       res.send(result);

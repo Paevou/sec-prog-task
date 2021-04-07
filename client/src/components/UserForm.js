@@ -18,7 +18,8 @@ class UserForm extends React.Component {
         let input = this.state.input;
         input[event.target.name] = event.target.value;
         this.setState({input});
-        this.validatePassword();
+        if( event.target.name == 'password' || event.target.name == 'password_confirm')
+            this.validatePassword();
     }
     /**
      * Handles the form submit
@@ -26,9 +27,24 @@ class UserForm extends React.Component {
      */
     handleSubmit(event) {
         event.preventDefault();
-
         if(this.validate()) {
-            console.log("State: ",this.state);
+                        
+            let data = new FormData();
+            const payload = {
+                firstname: this.state.input.firstname,
+                lastname: this.state.input.lastname,
+                email: this.state.input.email,
+                password: this.state.input.password,
+                password_confirm: this.state.input.password_confirm
+
+            }
+            data.append("user", typeof payload)
+            fetch('/user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(this.state.input)
+            });
+
             let input = {};
             input['firstname'] = "";
             input['lastname'] = "";
@@ -36,7 +52,6 @@ class UserForm extends React.Component {
             input['password'] = "";
             input['password_confirm'] = "";
             this.setState({input:input});
-            alert('New user form has been submitted');
         }
     }
     /**
@@ -103,7 +118,7 @@ class UserForm extends React.Component {
                 <div className="row">
                     <div className="col-md-7 mrgnbtm">
                     <h2>Create User</h2>
-                    <form method="POST">
+                    <form onSubmit={this.handleSubmit}>
                         <div className="row">
                             <div className="form-group col-md-6">
                                 <label htmlFor="exampleInputEmail1">First Name</label>

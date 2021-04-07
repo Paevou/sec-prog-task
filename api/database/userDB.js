@@ -19,7 +19,7 @@ const pool = new Pool({
  */
 const addUser = function(user) {    
     const query_string = "INSERT INTO users(email, firstname, lastname, pw_hash_salt) VALUES($1, $2, $3, $4) RETURNING *";
-    const values = [user['email'], user['firstName'], user['lastName'], user['pw_hash_salt']];
+    const values = [user['email'], user['firstname'], user['lastname'], user['pw_hash_salt']];
     return pool
         .query(query_string, values)
         .then(res => {
