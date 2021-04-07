@@ -23,10 +23,17 @@ const addUser = function(user) {
     return pool
         .query(query_string, values)
         .then(res => {
+            if(res.rows.length == 0 ) {
+                return "Addition Failed";
+            }
+            
             // console.log("user added");
-            return res;
+            return "OK";
         })
-        .catch(err => {console.error(err.stack)})
+        .catch(err => {
+            console.error(err.stack);          
+            return err;            
+        })
 }
 /**
  * Updates user with userId to the given status
@@ -46,10 +53,16 @@ const updateUser = function(email, info) {
     return pool
         .query(query_string, values)
         .then(res => {
+            if(res.rows.length == 0 ) {
+                return "Update Failed";
+            }
             // console.log("user updated");
-            return res;
+            return "OK";
         })
-        .catch(err => {console.error(err.stack)})
+        .catch(err => {
+            console.error(err.stack);            
+            return err;
+        })
 }
 /**
  * Removes user with email
@@ -62,9 +75,12 @@ const removeUser = function(email) {
         .query(query_string, values)
         .then(res => {
             // console.log("user removed");
-            return res;
+            return "OK";
         })
-        .catch(err => {console.error(err.stack)})
+        .catch(err => {
+            console.error(err.stack);
+            return err;
+        })
 }
 
 /**
@@ -79,14 +95,13 @@ const getUserByEmail = function(email) {
         .then(res => {  
             if(res.rows.length == 0 ) {
                 // console.log("No user by id");
-                return "404: Not Found";
-            }  
-            
-            return res.rows[0]['data'];
+                return {};
+            }              
+            return res.rows[0];
         })
         .catch(err => {
             console.error(err.stack);
-            return "400: Bad Request";
+            return err;
         })
 }
 
@@ -100,16 +115,19 @@ const getUsers = function() {
         .then(res => {
             if(res.rows.length == 0 ) {
                 // console.log("No users");
-                return {}
+                return []
             }
             let users = []
             for(i=0; i<res.rows.length; i++) {
-                //users.push(res.rows[i]['data'])
+                users.push(res.rows[i])
             }
             // console.log("users fetched");
             return users;
         })
-        .catch(err => {console.error(err.stack);})
+        .catch(err => {
+            console.error(err.stack);           
+            return err;
+        })
 }
 
 /**
@@ -124,45 +142,38 @@ const getUsers = function() {
         lastname VARCHAR NOT NULL,
         pw_hash_salt VARCHAR NOT NULL
     );`;
-    const del_table = `DROP TABLE IF EXISTS users;`;
-    return pool
-        .query(del_table)
+    pool
+        .query(user_table)
         .then(res => {
-            // console.log("Table droppped if existed");
-            pool
-                .query(user_table)
-                .then(res => {
-                    // console.log("Table created/checked")
+            // console.log("Table created/checked")
 
-                    // Test the functions and add some test data
-                    if(process.env.MODE=="dev") {   
-                        let test_data = {
-                            email: "test@test.com",
-                            firstName: "Test",
-                            lastName: "Tester",
-                            pw_hash_salt: "testHash"
+            // Test the functions and add some test data
+            if(process.env.MODE=="dev") {   
+                let test_data = {
+                    email: "test@test.com",
+                    firstName: "Test",
+                    lastName: "Tester",
+                    pw_hash_salt: "testHash"
+                }
+                addUser(test_data)
+                .then( () => {
+                    updateUser(test_data["email"], {firstName: "Test1", lastName: "Tester1"})
+                    .then(() => {
+                        test_data = {
+                            email: "test2@test2.com",
+                            firstName: "Test2",
+                            lastName: "Tester2",
+                            pw_hash_salt: "testHash2"
                         }
                         addUser(test_data)
-                        .then( () => {
-                            updateUser(test_data["email"], {firstName: "Test1", lastName: "Tester1"})
-                            .then(() => {
-                                test_data = {
-                                    email: "test2@test2.com",
-                                    firstName: "Test2",
-                                    lastName: "Tester2",
-                                    pw_hash_salt: "testHash2"
-                                }
-                                addUser(test_data)
-                                .then(() => {
-                                    removeUser(test_data['email']);
-                                })
-                            })                            
-                        })                    
-                    }
-                })
-        .catch(err => console.error(err.stack))
+                        .then(() => {
+                            removeUser(test_data['email']);
+                        })
+                    })                            
+                })                    
+            }
         })
-        .catch(err => {console.error(err.stack);}) 
+.catch(err => {console.error(err.stack)})
 }
 
 

@@ -11,6 +11,7 @@ var userRouter = require('./routes/user')
 var testAPIRouter = require("./routes/testAPI");
 
 var userDB = require("./database/userDB");
+userDB.userDBInit();
 
 var app = express();
 
