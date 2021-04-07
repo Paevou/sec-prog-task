@@ -6,7 +6,7 @@ import './App.css';
 import { Header } from './components/Header'
 import { Users } from './components/Users'
 import { DisplayBoard } from './components/DisplayBoard'
-import CreateUser from './components/CreateUser'
+import UserForm from './components/UserForm'
 import { getAllUsers, createUser } from './services/UserService'
 
 class App extends Component {
@@ -19,11 +19,13 @@ class App extends Component {
 
   createUser = (e) => {
     console.log("Create user");
-      createUser(this.state.user)
-        .then(response => {
-          console.log(response);
-          this.setState({numberOfUsers: this.state.numberOfUsers + 1})
-      });
+      // createUser(this.state.user)
+      //   .then(response => {
+      //     console.log(response);
+      //     this.setState({numberOfUsers: this.state.numberOfUsers + 1})
+      // });
+      
+
   }
 
   getAllUsers = () => {
@@ -34,17 +36,17 @@ class App extends Component {
       });
   }
 
-  onChangeForm = (e) => {
-      let user = this.state.user
-      if (e.target.name === 'firstname') {
-          user.firstName = e.target.value;
-      } else if (e.target.name === 'lastname') {
-          user.lastName = e.target.value;
-      } else if (e.target.name === 'email') {
-          user.email = e.target.value;
-      }
-      this.setState({user})
-  }
+  // onChangeForm = (e) => {
+  //     let user = this.state.user
+  //     if (e.target.name === 'firstname') {
+  //         user.firstName = e.target.value;
+  //     } else if (e.target.name === 'lastname') {
+  //         user.lastName = e.target.value;
+  //     } else if (e.target.name === 'email') {
+  //         user.email = e.target.value;
+  //     }
+  //     this.setState({user})
+  // }
 
   render() {
     
@@ -54,12 +56,13 @@ class App extends Component {
         <div className="container mrgnbtm">
           <div className="row">
             <div className="col-md-8">
-                <CreateUser 
+                {/* <CreateUser 
                   user={this.state.user}
                   onChangeForm={this.onChangeForm}
                   createUser={this.createUser}
                   >
-                </CreateUser>
+                </CreateUser> */}
+                <UserForm />
             </div>
             <div className="col-md-4">
                 <DisplayBoard
