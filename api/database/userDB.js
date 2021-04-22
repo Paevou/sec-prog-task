@@ -87,7 +87,7 @@ const removeUser = function(email) {
  * Gets a user with the email from database
  * @param {integer} email 
  */
-const getUserByEmail = function(email) {
+const getUserByEmail = function(email) {    
     const query_string = "SELECT * FROM users WHERE email=$1";
     const values = [email];
     return pool
@@ -96,7 +96,7 @@ const getUserByEmail = function(email) {
             if(res.rows.length == 0 ) {
                 // console.log("No user by id");
                 return {};
-            }              
+            }             
             return res.rows[0];
         })
         .catch(err => {

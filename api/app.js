@@ -5,6 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
+var session = require('express-session')
+// Passport
+var passport = require('passport');
+require('./controllers/local-strategy')(passport);
+
+// Routers
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var userRouter = require('./routes/user')
@@ -15,6 +21,14 @@ var userDB = require("./database/userDB");
 userDB.userDBInit();
 
 var app = express();
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}))
+app.use(passport.initialize());
+app.use(passport.session());
 
 /**
  * Redirect http traffic to https
@@ -30,9 +44,9 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
-
+//Enable CORS for our domain
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "https://localhost");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });

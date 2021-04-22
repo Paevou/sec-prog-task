@@ -7,6 +7,7 @@ import { Header } from './components/Header'
 import { Users } from './components/Users'
 import { DisplayBoard } from './components/DisplayBoard'
 import UserForm from './components/UserForm'
+import Login from './components/Login'
 import { getAllUsers, createUser } from './services/UserService'
 
 class App extends Component {
@@ -55,21 +56,11 @@ class App extends Component {
         <Header></Header>
         <div className="container mrgnbtm">
           <div className="row">
-            <div className="col-md-8">
-                {/* <CreateUser 
-                  user={this.state.user}
-                  onChangeForm={this.onChangeForm}
-                  createUser={this.createUser}
-                  >
-                </CreateUser> */}
+            <div className="col-md-6">
                 <UserForm />
             </div>
-            <div className="col-md-4">
-                <DisplayBoard
-                  numberOfUsers={this.state.numberOfUsers}
-                  getAllUsers={this.getAllUsers}
-                >
-                </DisplayBoard>
+            <div className="col-md-6">
+               <Login />
             </div>
           </div>
         </div>
