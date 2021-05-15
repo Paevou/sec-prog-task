@@ -10,7 +10,7 @@ module.exports = function() {
         passwordField: 'password'
     },
         function(username, password, done) {
-            console.log("username: ", username, ' pwd: ', password);
+            //console.log("username: ", username, ' pwd: ', password);
             db.getUserByEmail(username)
             .then((user) => {
                 if(typeof user === 'error') {return done(user)}

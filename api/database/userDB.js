@@ -42,6 +42,7 @@ const addUser = function(user) {
  */
 const updateUser = function(email, info) {
     // TODO: 0 length object     )
+    console.log("Info: ", info);
     let query_string = "UPDATE users SET ";
     for(const [key, value] of Object.entries(info)) {
         query_string += format('%I=%L, ', key.toLowerCase(), value)
@@ -53,8 +54,9 @@ const updateUser = function(email, info) {
     return pool
         .query(query_string, values)
         .then(res => {
+            console.log("RES: ", res.rows);
             if(res.rows.length == 0 ) {
-                return "Update Failed";
+                return Error("Update Failed");
             }
             // console.log("user updated");
             return "OK";

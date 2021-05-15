@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var userBD = require('../database/userDB');
+var userDB = require('../database/userDB');
 var passwordHash  = require('password-hash');
 var passport = require('passport');
 
@@ -10,7 +10,7 @@ router.post('/', function(req, res, next) {
   console.log(body)
   const hash_salt = passwordHash.generate(body['password']);
   body['pw_hash_salt'] = hash_salt;
-  userBD.addUser(body)
+  userDB.addUser(body)
     .then(result => {
       res.send(result);
     })
@@ -19,7 +19,7 @@ router.post('/', function(req, res, next) {
 /* GET user listing. */
 router.get('/', function(req, res, next) {
   if(req.isAuthenticated()) {
-    userBD.getUserByEmail(req.user.email)
+    userDB.getUserByEmail(req.user.email)
       .then(result => {
         res.send({email: result["email"], lastName: result["lastname"], firstName: result["firstname"]});
       });
@@ -43,8 +43,27 @@ router.get('/logout', (req,res,next) => {
 });
 
 router.post('/update', (req, res, next ) => {
-  console.log("Update body: ", req.body);
-  res.send("Updated")
+  console.log("Update");
+  if(req.isAuthenticated()) {
+    console.log("Email: ", req.body);
+    userDB.getUserByEmail(req.user.email)
+      .then((user) => {
+        console.log("Then: ", user)
+          if(typeof user === 'error') {res.status(500).send("Error."); }
+          else if(user == {}) {res.status(401).send("Could not find."); }
+          else if(!passwordHash.verify(req.body.password, user.pw_hash_salt)) {res.status(401).send("Could not find")}
+          else {
+            console.log("Body:", req.body);
+            userDB.updateUser(req.user.email, { firstName: req.body.firstName, lastName: req.body.lastName})
+            .then(result => {
+              if( typeof result === 'error' ) { res.status( 501 ).send( "Unexpected error." ); }
+              else { res.status(200).send("User Updated."); }
+            })
+          }
+      }) 
+  }
+  // console.log("Update body: ", req.body);
+  // res.send("Updated")
 });
 
 module.exports = router;
