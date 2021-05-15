@@ -1,4 +1,12 @@
 import React, { Component } from 'react';
+import ReactDOM from "react-dom";
+
+import {
+  Route,
+  NavLink,
+  HashRouter
+} from "react-router-dom";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './logo.svg';
 import './App.css';
@@ -8,67 +16,76 @@ import { Users } from './components/Users'
 import { DisplayBoard } from './components/DisplayBoard'
 import UserForm from './components/UserForm'
 import Login from './components/Login'
+import UserProfile from './components/UserProfile'
 import { getAllUsers, createUser } from './services/UserService'
 
 class App extends Component {
 
+  constructor(props) {
+    super(props);
+  }
+
   state = {
     user: {},
     users: [],
-    numberOfUsers: 0
+    isAuthenticated: false
+  };
+
+  componentDidMount() {
+    const authenticationState = JSON.parse(localStorage.getItem("isAuthenticated"));
+    if(authenticationState !== undefined) {
+      this.setState( { isAuthenticated: authenticationState } );
+    } 
+    console.log("AUthenticated?: ", this.state.isAuthenticated);
   }
 
-  createUser = (e) => {
-    console.log("Create user");
-      // createUser(this.state.user)
-      //   .then(response => {
-      //     console.log(response);
-      //     this.setState({numberOfUsers: this.state.numberOfUsers + 1})
-      // });
-      
-
+  login = () => {
+    console.log("Login")
+    this.setState( { isAuthenticated: true } );
+    localStorage.setItem("isAuthenticated", true);
   }
 
-  getAllUsers = () => {
-    getAllUsers()
-      .then(users => {
-        console.log(users)
-        this.setState({users: users, numberOfUsers: users.length})
-      });
+  logout = () => {
+    fetch('/user/logout', {
+      method: 'GET'
+    })
+    .then(result => {
+      if(result.ok) {
+        this.setState( { isAuthenticated: false } );
+        localStorage.clear();
+        window.location.href = "/";
+      } else {
+        // #TODO: Handle error in logout?
+      }
+    })
   }
-
-  // onChangeForm = (e) => {
-  //     let user = this.state.user
-  //     if (e.target.name === 'firstname') {
-  //         user.firstName = e.target.value;
-  //     } else if (e.target.name === 'lastname') {
-  //         user.lastName = e.target.value;
-  //     } else if (e.target.name === 'email') {
-  //         user.email = e.target.value;
-  //     }
-  //     this.setState({user})
-  // }
 
   render() {
-    
-    return (
-      <div className="App">
-        <Header></Header>
-        <div className="container mrgnbtm">
-          <div className="row">
-            <div className="col-md-6">
-                <UserForm />
-            </div>
-            <div className="col-md-6">
-               <Login />
-            </div>
+
+    return ( 
+      <HashRouter>
+        <div>
+          <h1> SPA Application </h1>
+          <u1 className="header">
+
+            {!this.state.isAuthenticated && (<li className="btn btn-dark"> <NavLink to="/login"> Login </NavLink> </li>)} 
+            {!this.state.isAuthenticated && (<li className="btn btn-dark"> <NavLink to="/register"> Register </NavLink> </li>)} 
+
+            {this.state.isAuthenticated && (<li className="btn btn-dark" onClick={this.logout}> Logout </li>)}
+            {this.state.isAuthenticated && (<li className="btn btn-dark"> <NavLink to="/profile"> Profile </NavLink> </li>)}
+
+          </u1>
+          <div className="content">
+
+            <Route path="/login" render={(props) => <Login login={this.login}/>}/>
+            <Route path="/register" component={UserForm}/>
+
+            <Route path="/profile" component={UserProfile}/>
+
           </div>
         </div>
-        <div className="row mrgnbtm">
-          <Users users={this.state.users}></Users>
-        </div>
-      </div>
-    );
+      </HashRouter>
+    )
   }
 }
 

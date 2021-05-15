@@ -19,6 +19,7 @@ class Login extends React.Component {
         input[event.target.name] = event.target.value;
         this.setState({input});
     }
+
     /**
      * Handles the form submit
      * @param {*} event 
@@ -38,6 +39,11 @@ class Login extends React.Component {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(this.state.input)
+            })
+            .then(result => {
+                if(result.ok) {
+                    this.props.login();
+                }
             });
 
             let input = {};
@@ -86,7 +92,7 @@ class Login extends React.Component {
                             <div className="text-danger">{this.state.errors.password}</div>
                         </div>
                         
-                        <button type="submit" value="Submit"  className="btn btn-danger">Create</button>
+                        <button type="submit" value="Submit"  className="btn btn-danger">Login</button>
                     </form>
                     </div>
                 </div>
