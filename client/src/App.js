@@ -11,13 +11,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './logo.svg';
 import './App.css';
 
-import { Header } from './components/Header'
-import { Users } from './components/Users'
-import { DisplayBoard } from './components/DisplayBoard'
 import UserForm from './components/UserForm'
 import Login from './components/Login'
 import UserProfile from './components/UserProfile'
-import { getAllUsers, createUser } from './services/UserService'
 
 class App extends Component {
 

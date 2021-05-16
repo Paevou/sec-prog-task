@@ -1,7 +1,7 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var db = require('../database/userDB');
-var passwordHash  = require('password-hash');
+var bcrypt = require('bcrypt');
 
 module.exports = function() {
     console.log("Local strategy used");
@@ -15,9 +15,15 @@ module.exports = function() {
             .then((user) => {
                 if(typeof user === 'error') {return done(user)}
                 if(user == {}) {return done(null, false, {message: 'Incorrect username'})};
-                if(!passwordHash.verify(password, user.pw_hash_salt)) {return done(null, false, {message: 'Incorrect password'})};
-                console.log("Auth pass")
-                return done(null, user);
+                bcrypt.compare(password, user.pw_hash_salt)
+                    .then((err, res) => {
+                        if(res === false) {
+                            return done(null, false, {message: 'Incorrect password'})
+                        } else {
+                            console.log("Auth pass")
+                            return done(null, user);
+                        }
+                    })
             })                
                  
         }

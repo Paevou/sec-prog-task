@@ -11,11 +11,11 @@ var passport = require('passport');
 require('./controllers/local-strategy')(passport);
 
 // Routers
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+//var indexRouter = require('./routes/index');
+//var usersRouter = require('./routes/users');
 var userRouter = require('./routes/user')
 // Test routes
-var testAPIRouter = require("./routes/testAPI");
+//var testAPIRouter = require("./routes/testAPI");
 
 var userDB = require("./database/userDB");
 userDB.userDBInit();
@@ -67,11 +67,11 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
-app.use('/users', usersRouter);
+//app.use('/users', usersRouter);
 app.use('/user', userRouter);
 
 // Test routes
-app.use("/testAPI", testAPIRouter);
+//app.use("/testAPI", testAPIRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

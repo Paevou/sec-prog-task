@@ -1,19 +1,24 @@
 var express = require('express');
 var router = express.Router();
 var userDB = require('../database/userDB');
-var passwordHash  = require('password-hash');
+var bcrypt = require('bcrypt');
 var passport = require('passport');
 
 /* POST new user listing. */
 router.post('/', function(req, res, next) {
   let body = req.body;
   console.log(body)
-  const hash_salt = passwordHash.generate(body['password']);
-  body['pw_hash_salt'] = hash_salt;
-  userDB.addUser(body)
-    .then(result => {
-      res.send(result);
+  const saltRounds = 10;
+  bcrypt.hash(body['password'], saltRounds)
+    .then((hash) => {
+      body['pw_hash_salt'] = hash;
+      userDB.addUser(body)
+        .then(result => {
+          res.send(result);
+      })
     })
+  // const hash_salt = passwordHash.generate(body['password']);
+  
 });
 
 /* GET user listing. */
@@ -51,7 +56,7 @@ router.post('/update', (req, res, next ) => {
         console.log("Then: ", user)
           if(typeof user === 'error') {res.status(500).send("Error."); }
           else if(user == {}) {res.status(401).send("Could not find."); }
-          else if(!passwordHash.verify(req.body.password, user.pw_hash_salt)) {res.status(401).send("Could not find")}
+          else if(!bcrypt.compareSync(req.body.password, user.pw_hash_salt)) {res.status(401).send("Could not find")}
           else {
             console.log("Body:", req.body);
             userDB.updateUser(req.user.email, { firstName: req.body.firstName, lastName: req.body.lastName})

@@ -42,7 +42,6 @@ const addUser = function(user) {
  */
 const updateUser = function(email, info) {
     // TODO: 0 length object     )
-    console.log("Info: ", info);
     let query_string = "UPDATE users SET ";
     for(const [key, value] of Object.entries(info)) {
         query_string += format('%I=%L, ', key.toLowerCase(), value)
@@ -54,7 +53,6 @@ const updateUser = function(email, info) {
     return pool
         .query(query_string, values)
         .then(res => {
-            console.log("RES: ", res.rows);
             if(res.rows.length == 0 ) {
                 return Error("Update Failed");
             }
@@ -132,6 +130,17 @@ const getUsers = function() {
         })
 }
 
+const resetDB = function() {
+    const query = `DROP TABLE IF EXISTS users;`;
+    return pool
+        .query(query)
+        .then((err, res) => {
+            return userDBInit();
+            
+        })
+    
+}
+
 /**
  * Initializes the database
  */
@@ -144,7 +153,7 @@ const getUsers = function() {
         lastname VARCHAR NOT NULL,
         pw_hash_salt VARCHAR NOT NULL
     );`;
-    pool
+    return pool
         .query(user_table)
         .then(res => {
             // console.log("Table created/checked")
@@ -179,4 +188,4 @@ const getUsers = function() {
 }
 
 
-module.exports = {addUser, updateUser, removeUser, getUserByEmail, getUsers, userDBInit}
+module.exports = {addUser, updateUser, removeUser, getUserByEmail, getUsers, userDBInit, resetDB}
