@@ -41,7 +41,7 @@ class Login extends React.Component {
                 body: JSON.stringify(this.state.input)
             })
             .then(result => {
-                if(result.ok) {
+                if(result.redirected !== true) {
                     this.props.login();
                 }
             });

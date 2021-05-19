@@ -64,11 +64,11 @@ class App extends Component {
           <h1> SPA Application </h1>
           <u1 className="header">
 
-            {!this.state.isAuthenticated && (<li className="btn btn-dark"> <NavLink to="/login"> Login </NavLink> </li>)} 
-            {!this.state.isAuthenticated && (<li className="btn btn-dark"> <NavLink to="/register"> Register </NavLink> </li>)} 
+            {!this.state.isAuthenticated && (<li className="btn btn-light"> <NavLink to="/login"> Login </NavLink> </li>)} 
+            {!this.state.isAuthenticated && (<li className="btn btn-light"> <NavLink to="/register"> Register </NavLink> </li>)} 
 
-            {this.state.isAuthenticated && (<li className="btn btn-dark" onClick={this.logout}> Logout </li>)}
-            {this.state.isAuthenticated && (<li className="btn btn-dark"> <NavLink to="/profile"> Profile </NavLink> </li>)}
+            {this.state.isAuthenticated && (<li className="btn btn-light" onClick={this.logout}> Logout </li>)}
+            {this.state.isAuthenticated && (<li className="btn btn-light"> <NavLink to="/profile"> Profile </NavLink> </li>)}
 
           </u1>
           <div className="content">

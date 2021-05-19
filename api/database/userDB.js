@@ -26,12 +26,10 @@ const addUser = function(user) {
             if(res.rows.length == 0 ) {
                 return "Addition Failed";
             }
-            
-            // console.log("user added");
             return "OK";
         })
         .catch(err => {
-            console.error(err.stack);          
+            //console.error(err.stack);          
             return err;            
         })
 }
@@ -47,8 +45,7 @@ const updateUser = function(email, info) {
         query_string += format('%I=%L, ', key.toLowerCase(), value)
     }
     query_string = query_string.substr(0, query_string.length - 2);
-    query_string += " WHERE email=$1 RETURNING *"
-    
+    query_string += " WHERE email=$1 RETURNING *";
     const values = [email];
     return pool
         .query(query_string, values)
@@ -106,7 +103,7 @@ const getUserByEmail = function(email) {
 }
 
 /**
- * Gets all the users in database
+ * Gets all the users in database.
  */
 const getUsers = function() {
     const query_string = "SELECT * FROM users;";
@@ -118,7 +115,7 @@ const getUsers = function() {
                 return []
             }
             let users = []
-            for(i=0; i<res.rows.length; i++) {
+            for(let i=0; i<res.rows.length; i++) {
                 users.push(res.rows[i])
             }
             // console.log("users fetched");
@@ -130,6 +127,9 @@ const getUsers = function() {
         })
 }
 
+/**
+ * Resets the DB in testing.
+ */
 const resetDB = function() {
     const query = `DROP TABLE IF EXISTS users;`;
     return pool

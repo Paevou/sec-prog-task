@@ -11,14 +11,12 @@ var passport = require('passport');
 require('./controllers/local-strategy')(passport);
 
 // Routers
-//var indexRouter = require('./routes/index');
-//var usersRouter = require('./routes/users');
 var userRouter = require('./routes/user')
-// Test routes
-//var testAPIRouter = require("./routes/testAPI");
 
 var userDB = require("./database/userDB");
 userDB.userDBInit();
+
+
 
 var app = express();
 app.use(session({
@@ -30,18 +28,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-/**
- * Redirect http traffic to https
- */
-app.enable('trust proxy');
-app.use((req, res, next) => {
-  if(req.secure) {
-    next();
-  } else {
-    res.writeHead(301, {"Location": "https://" + req.headers['host'] + ":" + port + req.url});
-    res.end();
-  }
-});
 
 app.use(bodyParser.json());
 //Enable CORS for our domain
@@ -50,6 +36,14 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
+// Supertest changes the port always so don't redirect them.
+if(process.env.TEST !== "yes") {
+  app.enable('trust proxy')
+  app.use((req, res, next) => {
+    req.secure ? next() : res.redirect('https://' + req.headers.host + ":9000/"  + req.url)
+  })
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -69,9 +63,6 @@ app.get('/', (req, res) => {
 });
 //app.use('/users', usersRouter);
 app.use('/user', userRouter);
-
-// Test routes
-//app.use("/testAPI", testAPIRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -82,7 +73,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  console.log("ERROR", err.message);
   // render the error page
   res.status(err.status || 500);
   res.render('error');
@@ -93,4 +84,5 @@ app.post('*', (req, res) => {
   res.send('404: Not Found');
 })
 
+// app.emit("appStarted");
 module.exports = app;

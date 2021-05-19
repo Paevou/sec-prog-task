@@ -4,24 +4,29 @@ var userDB = require('../database/userDB');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
 
-/* POST new user listing. */
+/* POST new user. */
 router.post('/', function(req, res, next) {
   let body = req.body;
-  console.log(body)
   const saltRounds = 10;
   bcrypt.hash(body['password'], saltRounds)
     .then((hash) => {
       body['pw_hash_salt'] = hash;
       userDB.addUser(body)
         .then(result => {
-          res.send(result);
+          if(result !== "OK") {
+            res.status(500).send("Unexpected error");
+          } else {
+            res.send(result);
+          }
       })
     })
-  // const hash_salt = passwordHash.generate(body['password']);
+    .catch((err) => {
+      res.statusCode(501).send("Unexpected error");
+    })
   
-});
+})
 
-/* GET user listing. */
+/* GET user profile. */
 router.get('/', function(req, res, next) {
   if(req.isAuthenticated()) {
     userDB.getUserByEmail(req.user.email)
@@ -34,6 +39,7 @@ router.get('/', function(req, res, next) {
   }
 });
 
+/* Login, authenticate with passport local strategy. */
 router.post('/login', passport.authenticate('local', {failureRedirect: '/'}), (req,res) => {
   res.send("login passed");
 });
@@ -47,28 +53,42 @@ router.get('/logout', (req,res,next) => {
   }
 });
 
+/**
+ * Update user information.
+ */
 router.post('/update', (req, res, next ) => {
-  console.log("Update");
+  // Check session.
   if(req.isAuthenticated()) {
-    console.log("Email: ", req.body);
     userDB.getUserByEmail(req.user.email)
       .then((user) => {
-        console.log("Then: ", user)
+
           if(typeof user === 'error') {res.status(500).send("Error."); }
+
           else if(user == {}) {res.status(401).send("Could not find."); }
+          // Sync operations are not the best. (Could change to async / promises)
           else if(!bcrypt.compareSync(req.body.password, user.pw_hash_salt)) {res.status(401).send("Could not find")}
+         
           else {
-            console.log("Body:", req.body);
-            userDB.updateUser(req.user.email, { firstName: req.body.firstName, lastName: req.body.lastName})
-            .then(result => {
-              if( typeof result === 'error' ) { res.status( 501 ).send( "Unexpected error." ); }
-              else { res.status(200).send("User Updated."); }
-            })
+            // User wants to update password too
+            if(typeof req.body.newPassword !== "undefined" && req.body.newPasswordConfirm === req.body.newPassword) {
+              
+              let saltRounds = 10;
+              let newPasswordHash = bcrypt.hashSync(req.body.newPassword, saltRounds);
+              userDB.updateUser(req.user.email, { firstName: req.body.firstName, lastName: req.body.lastName, pw_hash_salt: newPasswordHash})
+              .then(result => {
+                if( typeof result === 'error' ) { res.status( 501 ).send( "Unexpected error." ); }
+                else { res.status(200).send("User Updated."); }
+              });
+            } else {
+              userDB.updateUser(req.user.email, { firstName: req.body.firstName, lastName: req.body.lastName})
+              .then(result => {
+                if( typeof result === 'error' ) { res.status( 501 ).send( "Unexpected error." ); }
+                else { res.status(200).send("User Updated."); }
+              });
+            }
           }
       }) 
   }
-  // console.log("Update body: ", req.body);
-  // res.send("Updated")
 });
 
 module.exports = router;
