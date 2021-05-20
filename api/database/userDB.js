@@ -184,7 +184,7 @@ const resetDB = function() {
                 })                    
             }
         })
-.catch(err => {console.error(err.stack)})
+.catch(err => {console.log("NO DATABASE CONNECTION: ");console.error(err.stack)})
 }
 
 

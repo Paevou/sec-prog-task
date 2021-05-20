@@ -15,6 +15,8 @@ import UserForm from './components/UserForm'
 import Login from './components/Login'
 import UserProfile from './components/UserProfile'
 
+global.apiAddress = "CLIENT_API_ADDRESS";
+
 class App extends Component {
 
   constructor(props) {
